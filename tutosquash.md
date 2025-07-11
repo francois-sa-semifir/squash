@@ -81,6 +81,7 @@ services:
       - jenkins
     volumes:
       - ./squash_plugins:/opt/squash-tm/plugins
+      - ./squash_config/application.properties:/opt/squash-tm/application.properties # TODO
 
   orchestrator:
     image: squashtest/squash-orchestrator:latest   # Image "all-in-one" Squash Orchestrator
@@ -189,62 +190,7 @@ Une fois Squash TM démarré, accédez à l’interface web sur **[http://local
 
 ---
 
-### ✅ Étape 2 – Créer un projet et un cas de test
-
-1. Allez dans l'onglet **"Administration" > "Gestion des projets"**
-2. Cliquez sur **Créer un projet** :
-
-   * **Nom** : `Demo Squash`
-   * Laissez les autres champs par défaut
-
-#### Ajouter un cas de test automatisé
-
-1. Dans le projet `Demo Squash`, allez à l’onglet **"Cas de test"**
-2. Cliquez sur **Créer un cas de test**
-
-   * **Nom** : `Hello World`
-   * Laissez les autres champs par défaut
-3. Cliquez sur le bouton **Éditer** le cas de test
-4. Allez à l’onglet **"Automatisation"**
-
-   * **Automated test technology** : `JUnit`
-   * Le champ **“URL of the Source code repository”** est maintenant un menu déroulant :
-     * Cliquez dessus, vous verrez apparaître votre dépôt `https://github.com/junit-team/junit5-samples.git/JUnit5 Demo`
-   * Une fois le référentiel ajouté, sélectionnez-le
-   * **Automated test reference** :
-
-     ```sh
-     junit5-samples/junit5-jupiter-starter-gradle/src/test/java/com/example/project/CalculatorTests#addition
-     ```
-
----
-
-### ✅ Étape 3 – Préparer le plan d'exécution
-
-1. Allez dans **"Plans d’exécution"** du projet
-2. Cliquez sur **Nouvelle campagne** :
-   * Nom : `Campagne Demo`
-3. Dans la campagne, **Execution plan** cliquez **Ajouter une itération**
-
-   * Nom : `Iteration 1`
-4. Ouvrez l’itération créée, cliquez sur **Associate test cases**
-
-   * Sélectionnez votre cas “Hello World” via drag and drop
-
-💡 **Récupérer l’UUID de l’itération** :
-
-* Cliquez sur l’itération
-* L’URL du navigateur contient un identifiant comme :
-
-  ```http
-  http://localhost:8090/squash/campaign-workspace/campaign/<UUID>/test-plan?anchor=plan-exec
-  ```
-
-* Copiez cet UUID pour l’étape **6.5**
-
----
-
-### ✅ Étape 4 – Ajouter l’Orchestrateur dans Squash TM
+### ✅ Étape 2 – Ajouter l’Orchestrateur dans Squash TM
 
 1. Allez dans **Administration > Serveurs > Serveurs d'automatisation**
 
@@ -272,22 +218,73 @@ Une fois Squash TM démarré, accédez à l’interface web sur **[http://local
 
 ---
 
-### ✅ Étape 5 – Lier l’orchestrateur au projet
+### ✅ Étape 3 – Créer un projet et un cas de test
 
-1. Allez dans **Projets > Demo Squash > Configuration**
-2. Onglet **Automatisation**
-3. Sélectionnez le serveur `MyOrchestrator` comme **serveur d’automatisation par défaut**
-4. Enregistrez
+1. Allez dans l'onglet **"Administration" > "Gestion des projets"**
+2. Cliquez sur **Créer un projet** :
+
+   * **Nom** : `Demo Squash`
+   * Laissez les autres champs par défaut
+
+3. Lier l’orchestrateur au projet
+4. Onglet **Automatisation**
+5. Sélectionnez le serveur `MyOrchestrator` comme **serveur d’automatisation par défaut**
+6. Enregistrez
+
+#### Ajouter un cas de test automatisé
+
+1. Dans le projet `Demo Squash`, allez à l’onglet **"Cas de test"**
+2. Cliquez sur **Créer un cas de test**
+
+   * **Nom** : `Hello World`
+   * Laissez les autres champs par défaut
+3. Cliquez sur le bouton **Éditer** le cas de test
+4. Allez à l’onglet **"Automatisation"**
+
+   * **Automated test technology** : `JUnit`
+   * Le champ **“URL of the Source code repository”** est maintenant un menu déroulant :
+     * Cliquez dessus, vous verrez apparaître votre dépôt `https://github.com/junit-team/junit5-samples.git/JUnit5 Demo`
+   * Une fois le référentiel ajouté, sélectionnez-le
+   * **Automated test reference** :
+
+     ```sh
+     junit5-samples/junit5-jupiter-starter-gradle/src/test/java/com/example/project/CalculatorTests#addition
+     ```
 
 ---
 
-## 6. Configuration de Jenkins et du plugin Squash DEVOPS
+### ✅ Étape 4 – Préparer le plan d'exécution
+
+1. Allez dans **"Plans d’exécution"** du projet
+2. Cliquez sur **Nouvelle campagne** :
+   * Nom : `Campagne Demo`
+3. Dans la campagne, **Execution plan** cliquez **Ajouter une itération**
+
+   * Nom : `Iteration 1`
+4. Ouvrez l’itération créée, cliquez sur **Associate test cases**
+
+   * Sélectionnez votre cas “Hello World” via drag and drop
+
+💡 **Récupérer l’UUID de l’itération** :
+
+* Cliquez sur l’itération
+* L’URL du navigateur contient un identifiant comme :
+
+  ```http
+  http://localhost:8090/squash/campaign-workspace/campaign/<UUID>/test-plan?anchor=plan-exec
+  ```
+
+* Copiez cet UUID pour l’étape **5.5**
+
+---
+
+## 5. Configuration de Jenkins et du plugin Squash DEVOPS
 
 Avec Jenkins en place (accessible sur [http://localhost:8080](http://localhost:8080)), connectez-vous à l’interface Jenkins.
 
 > Si c’est la première exécution, récupérez le mot de passe administrateur initial : exécutez `docker exec my-jenkins cat /var/jenkins_home/secrets/initialAdminPassword` pour l’afficher, puis suivez l’assistant de démarrage Jenkins. Vous pouvez sélectionner les plugins suggérés de base. Le plugin Squash DevOps n’étant pas dans le catalogue public, inutile de le chercher dans la liste pour l’instant.
 
-### 6.1 Installation du plugin Squash DEVOPS dans Jenkins
+### 5.1 Installation du plugin Squash DEVOPS dans Jenkins
 
 Téléchargez le fichier HPI du plugin Squash DEVOPS (version community) depuis le site [Squashtest](https://tm-fr.doc.squashtest.com/latest/install-guide/installation/installation-orchestrator/install.html#installation_1)
 
@@ -295,7 +292,7 @@ Dans Jenkins, allez dans **Manage Jenkins > Manage Plugins > Advanced > Upload P
 
 ➡️ *Vérification :* Après installation, vous devriez voir dans **Manage Jenkins > Configure System** une section **Squash Orchestrator servers**.
 
-### 6.2 Installation du plugin Docker Pipeline dans Jenkins
+### 5.2 Installation du plugin Docker Pipeline dans Jenkins
 
 Dans Jenkins, allez dans **Manage Jenkins > Manage Plugins**, Onglet **Available** (ou **Installed** pour vérifier).
 
@@ -305,11 +302,11 @@ Installez-le, puis redémarrez Jenkins si nécessaire : `docker compose restart 
 
 > 👉 Cela active la syntaxe docker.image(...).inside {} dans vos pipelines.
 
-### 6.3 Configuration de la connexion à l’orchestrateur dans Jenkins
+### 5.3 Configuration de la connexion à l’orchestrateur dans Jenkins
 
 Au préalable, allez dans **Manage Jenkins > Credentials** et ajoutez une nouvelle entrée de type **Secret text** nommée par ex. `OrchToken` avec pour contenu le token JWT copié plus tôt
 
-Dans **Manage Jenkins > Configure System**, localisez **Squash Orchestrator servers**. Cliquez **Add** pour ajouter la configuration de notre orchestrateur :
+Dans **Manage Jenkins > Configure System**, localisez **OpenTestFactory Orchestrator servers**. Cliquez **Add** pour ajouter la configuration de notre orchestrateur :
 
 * **Server name:** donnez un nom identifiant ce serveur, par ex. `MyOrchestrator`. (Nous utiliserons ce nom dans le pipeline.)
 * **Receptionist endpoint URL:** `http://orchestrator:7774` (depuis Jenkins, le conteneur orchestrator est accessible par le hostname `orchestrator` sur le réseau Docker).
@@ -319,7 +316,7 @@ Dans **Manage Jenkins > Configure System**, localisez **Squash Orchestrator serv
 
 Jenkins est maintenant capable de communiquer avec l’orchestrateur Squash.
 
-### 6.4 Création du pipeline Jenkins
+### 5.4 Création du pipeline Jenkins
 
 Créez un nouveau **Job** de type **Pipeline** dans Jenkins (nommez-le par ex. *Demo-Squash-Pipeline*).
 
@@ -449,13 +446,13 @@ jobs:
 
 Enregistrez ce pipeline dans Jenkins (n’oubliez pas de remplacer `<YOUR_ITERATION_UUID>` par l’UUID réel de votre itération Squash, et ajustez éventuellement les noms de fichiers de rapport et identifiants).
 
-### 6.5 Choix d’un projet de test GitHub
+### 5.5 Choix d’un projet de test GitHub
 
 Si vous n’avez pas de projet GitHub à tester, vous pouvez utiliser l’exemple mentionné ci-dessus : **java-maven-junit-helloworld**. C’est un petit projet Java qui possède quelques tests JUnit 5 basiques (il s’agit d’un “Hello World” avec tests unitaires et d’intégration). Dans notre pipeline, nous avons pointé l’URL Git de ce projet. Vous pouvez forker ce dépôt sur votre compte GitHub ou utiliser directement l’URL publique en lecture seule comme dans l’exemple. Le pipeline va cloner le projet et exécuter `mvn test` dessus (ce qui lancera les tests unitaires JUnit).
 
 > *Remarque :* Le projet example exécute uniquement les tests unitaires avec `mvn test`. Il contient aussi des tests d’intégration (suffixe IT.java) qui ne tournent qu’avec `mvn verify`. Ici on se limite aux tests unitaires pour l’exemple. Assurez-vous que le cas de test créé dans Squash TM correspond bien à l’un des tests unitaires (par exemple, créez un cas de test “HelloWorldTest” et associez le à la classe/méthode de test correspondante).
 
-## 7. Exécution du pipeline et vérification des résultats
+## 6. Exécution du pipeline et vérification des résultats
 
 Tout est prêt à présent : Squash TM et l’orchestrateur tournent, Jenkins est configuré avec le plugin et le pipeline.
 
@@ -469,7 +466,7 @@ Maintenant, vérifions dans **Squash TM** :
 
 Si tout est correctement configuré, vous avez un pipeline CI/CD complet où Jenkins exécute les tests et **rapatrie automatiquement les résultats dans Squash TM** 🎉. Vous pouvez ainsi suivre dans Squash la traçabilité des exigences -> cas de test -> exécutions, même pour les tests automatisés, et bénéficier des rapports de campagne de Squash.
 
-## 8. Conclusion
+## 7. Conclusion
 
 Nous avons installé et intégré avec succès **Squash TM (community)** avec Jenkins via **Squash Orchestrator DEVOPS**. L’environnement Docker Compose regroupe tous les composants nécessaires pour un laboratoire d’automatisation de tests : Jenkins (CI), Squash TM (gestion des tests) et Orchestrateur (liaison CI<>TM). Cette solution utilise uniquement des versions **gratuites/community** de Squash. En production, on veillera à renforcer la configuration (tokens JWT statiques, comptes de service dédiés, etc.), mais pour un TP ou une démonstration, l’approche ci-dessus offre une vue complète du processus.
 
